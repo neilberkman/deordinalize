@@ -39,7 +39,7 @@ defmodule Deordinalize do
     "ninety" => 90
   }
 
-  @tens_match Regex.compile!("(?<tens>#{@tens |> Map.keys() |> Enum.join("|")})-", "i")
+  @tens_match Regex.compile!("(?<tens>#{@tens |> Map.keys() |> Enum.join("|")})(?:\\s|-)", "i")
 
   @ordinal ~r/^(?<ordinal>\d+)(?:st|nd|rd|th)$/i
   @teenth ~r/^(?<teenth_prefix>.+)teenth$/i
@@ -55,32 +55,17 @@ defmodule Deordinalize do
   "Deordinalize" a string into the integer it references.
   For the time being, only supports ordinals from 1 to 100.
   Raises an `ArgumentError` if the input is not a String
-  representing a valid ordinal.
+  representing a valid ordinal. Handles both hyphenated
+  and non-hypenated orinals.
 
   ## Examples
 
       iex> "1st" |> Deordinalize.to_integer!
       1
-      iex> "11th" |> Deordinalize.to_integer!
-      11
-      iex> "16th" |> Deordinalize.to_integer!
-      16
-      iex> "20th" |> Deordinalize.to_integer!
-      20
-      iex> "21st" |> Deordinalize.to_integer!
-      21
-      iex> "99th" |> Deordinalize.to_integer!
-      99
-      iex> "first" |> Deordinalize.to_integer!
-      1
-      iex> "eleventh" |> Deordinalize.to_integer!
-      11
       iex> "sixteenth" |> Deordinalize.to_integer!
       16
-      iex> "twentieth" |> Deordinalize.to_integer!
-      20
-      iex> "twenty-first" |> Deordinalize.to_integer!
-      21
+      iex> "sixty eighth" |> Deordinalize.to_integer!
+      68
       iex> "ninety-ninth" |> Deordinalize.to_integer!
       99
   """
@@ -88,12 +73,12 @@ defmodule Deordinalize do
     try do
       s = str |> String.downcase()
 
-      {s, sum} =
+      {sum, s} =
         if String.match?(s, @tens_match) do
           tens = s |> capture(@tens_match, "tens")
-          {s |> String.replace("#{tens}-", ""), Map.get(@tens, tens)}
+          {Map.get(@tens, tens), s |> String.replace(Regex.compile!("#{tens}(?:\\s|-)"), "")}
         else
-          {s, 0}
+          {0, s}
         end
 
       cond do
