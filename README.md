@@ -10,7 +10,7 @@ The package can be installed by adding `deordinalize` to your list of dependenci
 ```elixir
 def deps do
   [
-    {:deordinalize, "~> 0.1.0"}
+    {:deordinalize, "~> 0.1.1"}
   ]
 end
 ```
@@ -47,5 +47,5 @@ The docs can be found at [https://hexdocs.pm/deordinalize](https://hexdocs.pm/de
 
 To generate docs:
 
-`ex_doc "Deordinalize" "VERSION" "_build/dev/lib/deordinalize/ebin" -u "https://github.com/neilberkman/deordinalize"` 
+`ex_doc "Deordinalize" "VERSION" "_build/dev/lib/deordinalize/ebin" -u "https://github.com/neilberkman/deordinalize"`
 
